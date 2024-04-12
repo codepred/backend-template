@@ -1,0 +1,40 @@
+version: '3.7'
+services:
+  survey-backend:
+    image: survey-backend:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: survey-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://survey-db:3306/survey?autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: mysql
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_JPA_DATABASE-PLATFORM: org.hibernate.dialect.MySQL8Dialect
+    depends_on:
+      - mysql
+    networks:
+      - survey-net
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: survey-db
+#    ports:
+#      - "3306:5442"
+    environment:
+      MYSQL_USER: mysql
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_PASSWORD: admin
+      MYSQL_DATABASE: survey
+    volumes:
+      - survey-mysql-data:/var/lib/mysql
+    networks:
+      - survey-net
+
+volumes:
+  survey-mysql-data:
+
+networks:
+  survey-net:
+    name: survey-net
